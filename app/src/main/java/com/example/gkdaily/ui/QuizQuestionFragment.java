@@ -1,6 +1,8 @@
 package com.example.gkdaily.ui;
 
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -8,6 +10,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +45,7 @@ public class QuizQuestionFragment extends Fragment {
     public static String ANSWER_B = "B";
     public static String ANSWER_C = "C";
     public static String ANSWER_D = "D";
-    public static String answerSelected;
+    public static String answerSelected="";
     public TextView selectedTextView;
     public static Boolean isRight;
     public static String correct_answer;
@@ -50,6 +53,17 @@ public class QuizQuestionFragment extends Fragment {
     public int currentQuestionNumber;
     public static int MAXQUESTIONCOUNT = 10;
     public int currentScore = 0;
+    public int colorIdA;
+    public ColorDrawable colorTextA;
+    public int colorIdB;
+    public ColorDrawable colorTextB;
+    public int colorIdC;
+    public ColorDrawable colorTextC;
+    public int colorIdD;
+    public ColorDrawable colorTextD;
+
+
+
 
     public static String ANSWER_A_LABEL = "1. ";
     public static String ANSWER_B_LABEL = "2. ";
@@ -65,6 +79,11 @@ public class QuizQuestionFragment extends Fragment {
     public static String CURRENT_ANSWERB = "answer_B";
     public static String CURRENT_ANSWERC = "answer_C";
     public static String CURRENT_ANSWERD = "answer_D";
+    public static String SAVE_BACKGROUNDCOLOR_A = "background_color_selected_A";
+    public static String SAVE_BACKGROUNDCOLOR_B = "background_color_selected_B";
+    public static String SAVE_BACKGROUNDCOLOR_C = "background_color_selected_C";
+    public static String SAVE_BACKGROUNDCOLOR_D = "background_color_selected_D";
+
 
     public String answerA;
     public String answerB;
@@ -112,8 +131,6 @@ public class QuizQuestionFragment extends Fragment {
             answerB = savedInstanceState.getString(CURRENT_ANSWERB);
             answerC = savedInstanceState.getString(CURRENT_ANSWERC);
             answerD = savedInstanceState.getString(CURRENT_ANSWERD);
-
-
         }
 
 
@@ -134,6 +151,33 @@ public class QuizQuestionFragment extends Fragment {
         mQuestionNumber.setText(currentQuestionNumber + "/"+MAXQUESTIONCOUNT);
         mScore.setText(String.valueOf(currentScore) + "/"+MAXQUESTIONCOUNT);
 
+        if(savedInstanceState!=null){
+
+            colorIdA = savedInstanceState.getInt(SAVE_BACKGROUNDCOLOR_A);
+            colorIdB = savedInstanceState.getInt(SAVE_BACKGROUNDCOLOR_B);
+            colorIdC = savedInstanceState.getInt(SAVE_BACKGROUNDCOLOR_C);
+            colorIdD = savedInstanceState.getInt(SAVE_BACKGROUNDCOLOR_D);
+
+            mAnswerA.setBackgroundResource(colorIdA);
+            mAnswerB.setBackgroundResource(colorIdB);
+            mAnswerC.setBackgroundResource(colorIdC);
+            mAnswerD.setBackgroundResource(colorIdD);
+            if(answerSelected.equals(ANSWER_A)){
+
+                selectedTextView = mAnswerA;
+            } else if(answerSelected.equals(ANSWER_B)){
+
+                selectedTextView = mAnswerB;
+            } else if(answerSelected.equals(ANSWER_C)){
+
+                selectedTextView = mAnswerC;
+            } else if(answerSelected.equals(ANSWER_D)){
+
+                selectedTextView = mAnswerD;
+            }
+
+        }
+
         mAnswerA.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -153,6 +197,7 @@ public class QuizQuestionFragment extends Fragment {
                 mAnswerC.setBackgroundResource(R.color.unselectColor);
                 mAnswerD.setBackgroundResource(R.color.unselectColor);
                 setAnswer(ANSWER_B, mAnswerB);
+
             }
         });
 
@@ -187,6 +232,8 @@ public class QuizQuestionFragment extends Fragment {
     public void setAnswer (String answer, TextView selectedText){
         answerSelected = answer;
         selectedTextView = selectedText;
+        setSelectedColorID();
+
     }
 
     public static String getAnswer(){
@@ -199,9 +246,11 @@ public class QuizQuestionFragment extends Fragment {
         mScore.setText(String.valueOf(currentScore) + "/"+MAXQUESTIONCOUNT);
         if(isRight){
                 selectedTextView.setBackgroundResource(R.color.correctAnswer);
+                setSelectedColorID();
 
         } else {
             selectedTextView.setBackgroundResource(R.color.wrongAnswer);
+            setSelectedColorID();
             setcorrectAnswerColor();
         }
     }
@@ -216,6 +265,19 @@ public class QuizQuestionFragment extends Fragment {
         } else if (correct_answer.equals(ANSWER_D)){
             mAnswerD.setBackgroundResource(R.color.correctAnswer);
         }
+        setSelectedColorID();
+    }
+
+    public void setSelectedColorID(){
+        colorTextA = (ColorDrawable) mAnswerA.getBackground();
+        colorIdA = colorTextA.getColor();
+        colorTextB = (ColorDrawable) mAnswerB.getBackground();
+        colorIdB = colorTextB.getColor();
+        colorTextC = (ColorDrawable) mAnswerC.getBackground();
+        colorIdC = colorTextC.getColor();
+        colorTextD = (ColorDrawable) mAnswerD.getBackground();
+        colorIdD = colorTextD.getColor();
+
     }
 
     @Override
@@ -228,6 +290,12 @@ public class QuizQuestionFragment extends Fragment {
         outState.putString(CURRENT_ANSWERB, answerB);
         outState.putString(CURRENT_ANSWERC, answerC);
         outState.putString(CURRENT_ANSWERD, answerD);
+        outState.putInt(SAVE_BACKGROUNDCOLOR_A, colorIdA);
+        outState.putInt(SAVE_BACKGROUNDCOLOR_B, colorIdB);
+        outState.putInt(SAVE_BACKGROUNDCOLOR_C, colorIdC);
+        outState.putInt(SAVE_BACKGROUNDCOLOR_D, colorIdD);
+
+
 
     }
 

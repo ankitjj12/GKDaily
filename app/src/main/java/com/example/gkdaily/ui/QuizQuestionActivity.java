@@ -61,12 +61,15 @@ public class QuizQuestionActivity extends AppCompatActivity {
             maxQuestionAttempt = savedInstanceState.getInt(MAXQUESTIONATTEMPT);
             questionNumber = savedInstanceState.getInt(QUESTIONNUMBER);
             currentScore = savedInstanceState.getInt(CURRENTSCORE);
+            questionLists_Array = savedInstanceState.getParcelableArrayList("arrayList");
 
         }
 
         mButtonPrev = findViewById(R.id.previous);
         mButtonSubmit = findViewById(R.id.submit);
         mButtonNext = findViewById(R.id.next);
+        mButtonPrev.setEnabled(false);
+        mButtonNext.setEnabled(false);
 
         position_clicked = (getIntent().getIntExtra(MainActivity.QUESTION_TYPE_POSITION, 0) + 1);
         typeName_clicked = getIntent().getStringExtra(MainActivity.QUESTION_TYPE_CLICKED);
@@ -77,11 +80,11 @@ public class QuizQuestionActivity extends AppCompatActivity {
 
         //QuizQuestionFragment quizQuestionFragment = new QuizQuestionFragment();
         // quizQuestionFragment.getPositionClicked(position_clicked);
-
+        fragmentManager = getSupportFragmentManager();
 
         //fragmentManager.beginTransaction().add(R.id.quiz_ques_ans_container, quizQuestionFragment).commit();
         if (savedInstanceState == null) {
-            fragmentManager = getSupportFragmentManager();
+
             new FetchQuestion().execute();
         }
 
@@ -136,15 +139,10 @@ public class QuizQuestionActivity extends AppCompatActivity {
             public void onClick(View v) {
 
 
-                    if(savedInstanceState == null) {
-                        answer = questionLists_Array.get(questionNumber).getCorrectAnswer();
 
-                    } else {
-                        answer = savedInstanceState.getString(ANSWER);
+                answer = questionLists_Array.get(questionNumber).getCorrectAnswer();
 
-                    }
-
-                    answer_chosen = QuizQuestionFragment.getAnswer();
+                answer_chosen = QuizQuestionFragment.getAnswer();
                     if (answer_chosen == null) {
                         Toast.makeText(v.getContext(), "Please Select the Answer", Toast.LENGTH_SHORT).show();
                     } else {
@@ -227,7 +225,7 @@ public class QuizQuestionActivity extends AppCompatActivity {
         outState.putInt(QUESTIONNUMBER, questionNumber);
         outState.putInt(CURRENTSCORE, currentScore);
         outState.putString(ANSWER, answer);
-        outState.putString(ANSWER_CHOSEN, answer_chosen);
+        outState.putParcelableArrayList("arrayList", questionLists_Array);
 
     }
 

@@ -1,9 +1,12 @@
 package com.example.gkdaily.questionDB;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class QuestionList implements Serializable {
+public class QuestionList implements Serializable, Parcelable {
 
     private String question;
     private String answerA;
@@ -58,5 +61,13 @@ public class QuestionList implements Serializable {
     }
 
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
+    }
 }
