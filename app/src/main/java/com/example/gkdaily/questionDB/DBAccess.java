@@ -11,7 +11,6 @@ public class DBAccess {
     private SQLiteOpenHelper sqLiteOpenHelper;
     private SQLiteDatabase sqLiteDatabase;
     private static DBAccess instance;
-    public static final int MAX = 10;
 
 
 
@@ -82,6 +81,7 @@ public class DBAccess {
 
         questionListCursor = sqLiteDatabase.rawQuery(String.format("SELECT * from GKDB WHERE TypeID = %d ORDER BY RANDOM()", typeId), null);
 
+
         if(questionListCursor.moveToFirst()){
 
             while (!questionListCursor.isAfterLast()){
@@ -101,6 +101,8 @@ public class DBAccess {
             }
 
         }
+
+        int size = questionLists_array.size();
 
         return  questionLists_array;
 

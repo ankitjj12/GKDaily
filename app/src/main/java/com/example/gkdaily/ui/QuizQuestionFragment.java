@@ -5,11 +5,13 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -30,11 +32,44 @@ public class QuizQuestionFragment extends Fragment {
     private TextView mAnswerB;
     private TextView mAnswerC;
     private TextView mAnswerD;
-    private Button mPrevious;
-    private Button mSubmit;
-    private Button mNext;
 
 
+    private TextView mQuestionNumber;
+    private TextView mScore;
+
+
+    public static String ANSWER_A = "A";
+    public static String ANSWER_B = "B";
+    public static String ANSWER_C = "C";
+    public static String ANSWER_D = "D";
+    public static String answerSelected;
+    public TextView selectedTextView;
+    public static Boolean isRight;
+    public static String correct_answer;
+    public QuestionList currentQuestion;
+    public int currentQuestionNumber;
+    public static int MAXQUESTIONCOUNT = 10;
+    public int currentScore = 0;
+
+    public static String ANSWER_A_LABEL = "1. ";
+    public static String ANSWER_B_LABEL = "2. ";
+    public static String ANSWER_C_LABEL = "3. ";
+    public static String ANSWER_D_LABEL = "4. ";
+
+
+    //For onSaved Instance
+    public static String SELECTED_ANSWER = "selected_answer";
+    public static String CURRENT_QUESTION_NUMBER = "current_question_number";
+    public static String CURRENT_SCORE = "current_score";
+    public static String CURRENT_ANSWERA = "answer_A";
+    public static String CURRENT_ANSWERB = "answer_B";
+    public static String CURRENT_ANSWERC = "answer_C";
+    public static String CURRENT_ANSWERD = "answer_D";
+
+    public String answerA;
+    public String answerB;
+    public String answerC;
+    public String answerD;
 
     public QuizQuestionFragment() {
         // Required empty public constructor
@@ -47,15 +82,39 @@ public class QuizQuestionFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
 
+            if ((QuestionList) getArguments().getSerializable(QuizQuestionActivity.QUESTION_KEY) != null) {
+                currentQuestion = (QuestionList) getArguments().getSerializable(QuizQuestionActivity.QUESTION_KEY);
+                currentQuestionNumber = getArguments().getInt(QuizQuestionActivity.QUESTION_NUMBER);
+                currentScore = getArguments().getInt(QuizQuestionActivity.CURRENT_SCORE);
+                answerA = currentQuestion.getAnswerA();
+                answerB = currentQuestion.getAnswerB();
+                answerC = currentQuestion.getAnswerC();
+                answerD = currentQuestion.getAnswerD();
+            }
+
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+
+
         View rootView = inflater.inflate(R.layout.fragment_quiz_question, container, false);
 
-        ArrayList<QuestionList> questionListsArray_local;
+
+        if(savedInstanceState != null){
+            answerSelected = savedInstanceState.getString(SELECTED_ANSWER);
+            currentQuestionNumber = savedInstanceState.getInt(CURRENT_QUESTION_NUMBER);
+            currentScore = savedInstanceState.getInt(CURRENT_SCORE);
+            answerA = savedInstanceState.getString(CURRENT_ANSWERA);
+            answerB = savedInstanceState.getString(CURRENT_ANSWERB);
+            answerC = savedInstanceState.getString(CURRENT_ANSWERC);
+            answerD = savedInstanceState.getString(CURRENT_ANSWERD);
+
+
+        }
 
 
         mQuestion = rootView.findViewById(R.id.question);
@@ -63,44 +122,112 @@ public class QuizQuestionFragment extends Fragment {
         mAnswerB = rootView.findViewById(R.id.answerB);
         mAnswerC = rootView.findViewById(R.id.answerC);
         mAnswerD = rootView.findViewById(R.id.answerD);
+        mQuestionNumber = rootView.findViewById(R.id.questionNumber);
+        mScore = rootView.findViewById(R.id.score);
 
-        new FetchQuestion().execute();
+        mQuestion.setText(currentQuestion.getQuestion());
+        mAnswerA.setText(ANSWER_A_LABEL + answerA);
+        mAnswerB.setText(ANSWER_B_LABEL + answerB);
+        mAnswerC.setText(ANSWER_C_LABEL + answerC);
+        mAnswerD.setText(ANSWER_D_LABEL + answerD);
+
+        mQuestionNumber.setText(currentQuestionNumber + "/"+MAXQUESTIONCOUNT);
+        mScore.setText(String.valueOf(currentScore) + "/"+MAXQUESTIONCOUNT);
+
+        mAnswerA.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAnswerA.setBackgroundResource(R.color.selectColor);
+                mAnswerB.setBackgroundResource(R.color.unselectColor);
+                mAnswerC.setBackgroundResource(R.color.unselectColor);
+                mAnswerD.setBackgroundResource(R.color.unselectColor);
+                setAnswer(ANSWER_A, mAnswerA);
+            }
+        });
+
+        mAnswerB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAnswerA.setBackgroundResource(R.color.unselectColor);
+                mAnswerB.setBackgroundResource(R.color.selectColor);
+                mAnswerC.setBackgroundResource(R.color.unselectColor);
+                mAnswerD.setBackgroundResource(R.color.unselectColor);
+                setAnswer(ANSWER_B, mAnswerB);
+            }
+        });
+
+        mAnswerC.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAnswerA.setBackgroundResource(R.color.unselectColor);
+                mAnswerB.setBackgroundResource(R.color.unselectColor);
+                mAnswerC.setBackgroundResource(R.color.selectColor);
+                mAnswerD.setBackgroundResource(R.color.unselectColor);
+                setAnswer(ANSWER_C, mAnswerC);
+            }
+        });
+
+        mAnswerD.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAnswerA.setBackgroundResource(R.color.unselectColor);
+                mAnswerB.setBackgroundResource(R.color.unselectColor);
+                mAnswerC.setBackgroundResource(R.color.unselectColor);
+                mAnswerD.setBackgroundResource(R.color.selectColor);
+                setAnswer(ANSWER_D, mAnswerD);
+
+            }
+        });
 
 
 
         return rootView;
     }
 
+    public void setAnswer (String answer, TextView selectedText){
+        answerSelected = answer;
+        selectedTextView = selectedText;
+    }
 
-    public class FetchQuestion extends AsyncTask<String, Void, ArrayList<QuestionList>>{
+    public static String getAnswer(){
+        return answerSelected;
+    }
 
-        public ArrayList<QuestionList> questionLists_array;
+    public void isAnswerRight(Boolean isRight_activity, String correct_answer_activity, int currentScore){
+        isRight = isRight_activity;
+        correct_answer = correct_answer_activity;
+        mScore.setText(String.valueOf(currentScore) + "/"+MAXQUESTIONCOUNT);
+        if(isRight){
+                selectedTextView.setBackgroundResource(R.color.correctAnswer);
 
-
-
-        @Override
-        protected ArrayList<QuestionList> doInBackground(String... strings) {
-
-            ArrayList<QuestionList> questionLists = new ArrayList<>();
-            DBAccess dbAccessQuestion = DBAccess.getInstance(getContext());
-            dbAccessQuestion.openDB();
-
-            questionLists = dbAccessQuestion.getAllQuestion(position_clicked);
-
-            return questionLists;
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<QuestionList> questionLists) {
-            super.onPostExecute(questionLists);
-
-
-
+        } else {
+            selectedTextView.setBackgroundResource(R.color.wrongAnswer);
+            setcorrectAnswerColor();
         }
     }
 
-    public void getPositionClicked(int position){
-        position_clicked = position;
+    public void setcorrectAnswerColor (){
+        if(correct_answer.equals(ANSWER_A)){
+            mAnswerA.setBackgroundResource(R.color.correctAnswer);
+        } else if (correct_answer.equals(ANSWER_B)){
+            mAnswerB.setBackgroundResource(R.color.correctAnswer);
+        } else if (correct_answer.equals(ANSWER_C)){
+            mAnswerC.setBackgroundResource(R.color.correctAnswer);
+        } else if (correct_answer.equals(ANSWER_D)){
+            mAnswerD.setBackgroundResource(R.color.correctAnswer);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(SELECTED_ANSWER, answerSelected);
+        outState.putInt(CURRENT_QUESTION_NUMBER, currentQuestionNumber);
+        outState.putInt(CURRENT_SCORE, currentScore);
+        outState.putString(CURRENT_ANSWERA, answerA);
+        outState.putString(CURRENT_ANSWERB, answerB);
+        outState.putString(CURRENT_ANSWERC, answerC);
+        outState.putString(CURRENT_ANSWERD, answerD);
 
     }
 

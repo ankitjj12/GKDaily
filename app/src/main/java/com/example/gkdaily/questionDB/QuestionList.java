@@ -1,8 +1,9 @@
 package com.example.gkdaily.questionDB;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class QuestionList {
+public class QuestionList implements Serializable {
 
     private String question;
     private String answerA;
