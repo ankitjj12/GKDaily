@@ -1,26 +1,28 @@
 package com.example.gkdaily.ui;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gkdaily.R;
-import com.example.gkdaily.questionDB.QuestionType;
+import com.example.gkdaily.roomDB.TypeDBEntity;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class QuestionTypeListAdapter extends RecyclerView.Adapter<QuestionTypeListAdapter.QuestionTypeListAdapterViewHolder> {
 
-    ArrayList<QuestionType> questionTypes_adp = new ArrayList<>();
+    List<TypeDBEntity> questionTypes_adp;
     Context ctx;
+    public static final String SHARED_PREF_WIDGET_QUESTION_LIST = "widget_question_pref";
+    public static final String QUESTION_LIST_SP = "question_type_list";
 
     ArrayList<String> questionType_list = new ArrayList<>();
     String questionType;
@@ -31,7 +33,7 @@ public class QuestionTypeListAdapter extends RecyclerView.Adapter<QuestionTypeLi
         public void questionTypeClicked(int position, String typeName);
     }
 
-    public QuestionTypeListAdapter(Context context, ArrayList<QuestionType> questionTypes_adp) {
+    public QuestionTypeListAdapter(Context context, List<TypeDBEntity> questionTypes_adp) {
         this.questionTypes_adp = questionTypes_adp;
         ctx = context;
         onclickPassType = (OnclickPassType) ctx;
@@ -53,12 +55,20 @@ public class QuestionTypeListAdapter extends RecyclerView.Adapter<QuestionTypeLi
 
     @Override
     public void onBindViewHolder(@NonNull QuestionTypeListAdapterViewHolder holder, final int position) {
+
+        /*SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHARED_PREF_WIDGET_QUESTION_LIST, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor_widget = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(questionType_list);
+        editor_widget.putString(QUESTION_LIST_SP, json);
+        editor_widget.apply();*/
+
         holder.topicName.setText(questionType_list.get(position));
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String type_clicked = questionType_list.get(position);
-                Toast.makeText(v.getContext(), "Pressed" + type_clicked, Toast.LENGTH_LONG ).show();
+              //  Toast.makeText(v.getContext(), "Pressed" + type_clicked, Toast.LENGTH_LONG ).show();
                 onclickPassType.questionTypeClicked(position, type_clicked);
             }
         });
@@ -69,10 +79,7 @@ public class QuestionTypeListAdapter extends RecyclerView.Adapter<QuestionTypeLi
 
     @Override
     public int getItemCount() {
-        if(questionTypes_adp.size() > 0){
-            return questionTypes_adp.size();
-        }
-        return 0;
+        return questionTypes_adp==null?0:questionTypes_adp.size();
     }
 
     public class QuestionTypeListAdapterViewHolder extends RecyclerView.ViewHolder{

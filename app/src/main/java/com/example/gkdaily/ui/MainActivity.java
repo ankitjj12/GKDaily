@@ -1,18 +1,11 @@
 package com.example.gkdaily.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-
 import com.example.gkdaily.R;
-import com.example.gkdaily.questionDB.DBAccess;
-import com.example.gkdaily.questionDB.QuestionType;
 
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements QuestionTypeListAdapter.OnclickPassType{
 

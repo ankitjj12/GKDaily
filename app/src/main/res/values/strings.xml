@@ -9,4 +9,16 @@
     <string name="submit_label">Submit</string>
     <string name="next_label">Next</string>
     <string name="play_again">Play Again</string>
+    <string name="final_score_label">Your Final Score</string>
+    <string name="final_score">5/10</string>
+    <string name="question_number">2/10</string>
+    <string name="current_score">10</string>
+    <string name="answer_A">Answer A</string>
+    <string name="answer_B">Answer B</string>
+    <string name="answer_C">Answer C</string>
+    <string name="answer_D">Answer D</string>
+    <string name="sample_question">Who is president of USA?</string>
+    <string name="desc">Image</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
 </resources>

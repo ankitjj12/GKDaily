@@ -1,32 +1,48 @@
-package com.example.gkdaily.questionDB;
+package com.example.gkdaily.roomDB;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+
 import java.io.Serializable;
-import java.util.ArrayList;
 
-public class QuestionList implements Serializable, Parcelable {
+@Entity (tableName = "GKDB")
+public class GKDBEntity implements Serializable, Parcelable {
 
+    @PrimaryKey
+    @ColumnInfo(name = "QN")
+    private int qn;
+
+    @ColumnInfo(name = "TypeID")
+    private int typeID;
+
+    @ColumnInfo(name = "Question")
     private String question;
+
+    @ColumnInfo(name = "AnswerA")
     private String answerA;
+
+    @ColumnInfo(name = "AnswerB")
     private String answerB;
+
+    @ColumnInfo(name = "AnswerC")
     private String answerC;
+
+    @ColumnInfo(name = "AnswerD")
     private String answerD;
+
+    @ColumnInfo(name = "Correct_Answer")
     private String correctAnswer;
 
 
-    public static String GKBD_TABLE_COLUMN_QUESTION = "Question";
-    public static String GKBD_TABLE_COLUMN_TYPEID = "TypeID";
-    public static String GKBD_TABLE_COLUMN_ANSWERA = "AnswerA";
-    public static String GKBD_TABLE_COLUMN_ANSWERB = "AnswerB";
-    public static String GKBD_TABLE_COLUMN_ANSWERC = "AnswerC";
-    public static String GKBD_TABLE_COLUMN_ANSWERD = "AnswerD";
-    public static String GKBD_TABLE_COLUMN_CORRECTANSWER = "Correct_Answer";
 
-
-
-    public QuestionList(String question, String answerA, String answerB, String answerC, String answerD, String correctAnswer) {
+    public GKDBEntity(int qn, int typeID, String question, String answerA, String answerB, String answerC, String answerD, String correctAnswer) {
+        this.qn = qn;
+        this.typeID = typeID;
         this.question = question;
         this.answerA = answerA;
         this.answerB = answerB;
@@ -35,6 +51,13 @@ public class QuestionList implements Serializable, Parcelable {
         this.correctAnswer = correctAnswer;
     }
 
+    public int getQn() {
+        return qn;
+    }
+
+    public int getTypeID() {
+        return typeID;
+    }
 
     public String getQuestion() {
         return question;
@@ -59,7 +82,6 @@ public class QuestionList implements Serializable, Parcelable {
     public String getCorrectAnswer() {
         return correctAnswer;
     }
-
 
     @Override
     public int describeContents() {

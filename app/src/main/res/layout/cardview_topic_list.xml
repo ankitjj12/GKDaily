@@ -2,8 +2,8 @@
     <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/cardViewLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
         android:layout_gravity="center"
         app:cardBackgroundColor="@color/cardColor"
         app:cardUseCompatPadding="true"
@@ -11,10 +11,7 @@
         android:padding="2dp"
         app:cardCornerRadius="4dp">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="30dp">
+
         <TextView
             android:id="@+id/topicName_text"
             android:layout_width="match_parent"
@@ -22,9 +19,12 @@
             android:text="Testing"
             android:textColor="@android:color/black"
             android:textAlignment="center"
+            android:gravity="center"
+            android:layout_gravity="center"
             android:fontFamily="sans-serif"
-            android:textSize="20dp" />
+            android:textSize="18dp"
+            android:textStyle="bold"/>
 
-    </RelativeLayout>
+
 
     </androidx.cardview.widget.CardView>

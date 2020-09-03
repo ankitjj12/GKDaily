@@ -1,28 +1,16 @@
 package com.example.gkdaily.ui;
 
-import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.TextView;
-
 import com.example.gkdaily.R;
-import com.example.gkdaily.questionDB.DBAccess;
-import com.example.gkdaily.questionDB.QuestionList;
+import com.example.gkdaily.roomDB.GKDBEntity;
 
-import java.util.ArrayList;
 
 
 public class QuizQuestionFragment extends Fragment {
@@ -35,6 +23,7 @@ public class QuizQuestionFragment extends Fragment {
     private TextView mAnswerB;
     private TextView mAnswerC;
     private TextView mAnswerD;
+    public int temp = 344749;
 
 
     private TextView mQuestionNumber;
@@ -48,8 +37,8 @@ public class QuizQuestionFragment extends Fragment {
     public static String answerSelected="";
     public TextView selectedTextView;
     public static Boolean isRight;
-    public static String correct_answer;
-    public QuestionList currentQuestion;
+    public static String correct_answer="";
+    public GKDBEntity currentQuestion;
     public int currentQuestionNumber;
     public static int MAXQUESTIONCOUNT = 10;
     public int currentScore = 0;
@@ -101,8 +90,8 @@ public class QuizQuestionFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
 
-            if ((QuestionList) getArguments().getSerializable(QuizQuestionActivity.QUESTION_KEY) != null) {
-                currentQuestion = (QuestionList) getArguments().getSerializable(QuizQuestionActivity.QUESTION_KEY);
+            if ((GKDBEntity) getArguments().getSerializable(QuizQuestionActivity.QUESTION_KEY) != null) {
+                currentQuestion = (GKDBEntity) getArguments().getSerializable(QuizQuestionActivity.QUESTION_KEY);
                 currentQuestionNumber = getArguments().getInt(QuizQuestionActivity.QUESTION_NUMBER);
                 currentScore = getArguments().getInt(QuizQuestionActivity.CURRENT_SCORE);
                 answerA = currentQuestion.getAnswerA();
@@ -151,17 +140,19 @@ public class QuizQuestionFragment extends Fragment {
         mQuestionNumber.setText(currentQuestionNumber + "/"+MAXQUESTIONCOUNT);
         mScore.setText(String.valueOf(currentScore) + "/"+MAXQUESTIONCOUNT);
 
-        if(savedInstanceState!=null){
+       if(savedInstanceState!=null){
 
             colorIdA = savedInstanceState.getInt(SAVE_BACKGROUNDCOLOR_A);
             colorIdB = savedInstanceState.getInt(SAVE_BACKGROUNDCOLOR_B);
             colorIdC = savedInstanceState.getInt(SAVE_BACKGROUNDCOLOR_C);
             colorIdD = savedInstanceState.getInt(SAVE_BACKGROUNDCOLOR_D);
 
-            mAnswerA.setBackgroundResource(colorIdA);
-            mAnswerB.setBackgroundResource(colorIdB);
-            mAnswerC.setBackgroundResource(colorIdC);
-            mAnswerD.setBackgroundResource(colorIdD);
+
+
+            mAnswerA.setBackgroundColor(colorIdA);
+            mAnswerB.setBackgroundColor(colorIdB);
+            mAnswerC.setBackgroundColor(colorIdC);
+            mAnswerD.setBackgroundColor(colorIdD);
             if(answerSelected.equals(ANSWER_A)){
 
                 selectedTextView = mAnswerA;
@@ -177,6 +168,7 @@ public class QuizQuestionFragment extends Fragment {
             }
 
         }
+
 
         mAnswerA.setOnClickListener(new View.OnClickListener() {
             @Override

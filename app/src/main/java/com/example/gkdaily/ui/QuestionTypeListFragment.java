@@ -1,11 +1,15 @@
 package com.example.gkdaily.ui;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,10 +18,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.gkdaily.R;
-import com.example.gkdaily.questionDB.DBAccess;
-import com.example.gkdaily.questionDB.QuestionType;
+import com.example.gkdaily.roomDB.QuizRoomDataBase;
+import com.example.gkdaily.roomDB.TypeDBEntity;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class QuestionTypeListFragment extends Fragment {
@@ -26,6 +32,14 @@ public class QuestionTypeListFragment extends Fragment {
     //private OnFragmentInteractionListener mListener;
     public static int GRID_COLUMN = 2;
     QuestionTypeListAdapter questionTypeListAdapter;
+
+    public static final String SHARED_PREF_WIDGET_QUESTION_LIST = "widget_question_pref";
+    public static final String QUESTION_LIST_SP = "question_type_list";
+
+    public QuesListViewModel quesListViewModel;
+
+    private String questionType;
+    private ArrayList<String> questionTypeArrayList = new ArrayList<>();
 
     public QuestionTypeListFragment() {
         // Required empty public constructor
@@ -42,24 +56,42 @@ public class QuestionTypeListFragment extends Fragment {
 
         recyclerViewQuestionType = rootView.findViewById(R.id.questionType_recycler_view);
         recyclerViewQuestionType.setLayoutManager(new GridLayoutManager(getContext(), GRID_COLUMN));
+        quesListViewModel = ViewModelProviders.of(this).get(QuesListViewModel.class);
+        quesListViewModel.getAllType().observe(this, new Observer<List<TypeDBEntity>>() {
+            @Override
+            public void onChanged(List<TypeDBEntity> typeDBEntities) {
+                    if(typeDBEntities!=null){
+                        questionTypeListAdapter = new QuestionTypeListAdapter(getContext(), typeDBEntities);
+                        recyclerViewQuestionType.setAdapter(questionTypeListAdapter);
+                        updateWidgetListService(getContext(), typeDBEntities);
 
-        new FetchQuestionType().execute();
+                    }
+            }
+        });
+
+
 
         return rootView;
     }
 
 
-  /*  @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    } */
 
+    public void updateWidgetListService(Context context, List<TypeDBEntity> typeDBEntitiesWidget){
+
+        for (int i=0; i < typeDBEntitiesWidget.size(); i++){
+            questionType = typeDBEntitiesWidget.get(i).getTopic();
+            questionTypeArrayList.add(questionType);
+        }
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREF_WIDGET_QUESTION_LIST, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor_widget = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(questionTypeArrayList);
+        editor_widget.putString(QUESTION_LIST_SP, json);
+        editor_widget.apply();
+
+
+    }
 
     /**
      * This interface must be implemented by activities that contain this
@@ -76,28 +108,5 @@ public class QuestionTypeListFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public class FetchQuestionType extends AsyncTask<String, Void, ArrayList<QuestionType>> {
 
-        @Override
-        protected ArrayList<QuestionType> doInBackground(String... strings) {
-
-            ArrayList<QuestionType> arrayListQT = new ArrayList<>();
-
-            DBAccess dbAccess = DBAccess.getInstance(getContext());
-            dbAccess.openDB();
-            arrayListQT = dbAccess.getAllTopic();
-
-            dbAccess.closeDB();
-
-            return arrayListQT;
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<QuestionType> questionTypes) {
-            super.onPostExecute(questionTypes);
-            questionTypeListAdapter = new QuestionTypeListAdapter(getContext(), questionTypes);
-            recyclerViewQuestionType.setAdapter(questionTypeListAdapter);
-
-        }
-    }
 }
